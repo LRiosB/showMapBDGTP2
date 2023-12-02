@@ -173,13 +173,64 @@ FROM dfRelevante as t1, dfEstacoes as t2
 WHERE t1.Codigo = t2.Codigo
 """)
 
-st.dataframe(dfRelevante)
+
+
+def fracaoArvores(linha):
+
+    vInit = linha["extent_2010_ha"]
+
+    v2010 = vInit - linha["tc_loss_ha_2010"]
+    v2011 = v2010 - linha["tc_loss_ha_2011"]
+    v2012 = v2011 - linha["tc_loss_ha_2012"]
+    v2013 = v2012 - linha["tc_loss_ha_2013"]
+    v2014 = v2013 - linha["tc_loss_ha_2014"]
+    v2015 = v2014 - linha["tc_loss_ha_2015"]
+    v2016 = v2015 - linha["tc_loss_ha_2016"]
+    v2017 = v2016 - linha["tc_loss_ha_2017"]
+    v2018 = v2017 - linha["tc_loss_ha_2018"]
+    v2019 = v2018 - linha["tc_loss_ha_2019"]
+    v2020 = v2019 - linha["tc_loss_ha_2020"]
+    v2021 = v2020 - linha["tc_loss_ha_2021"]
+    v2022 = v2021 - linha["tc_loss_ha_2022"]
+
+    return v2022/linha["area_ha"]
+
+def corArvores(linha):
+    verde = np.array([0/255, 255/255, 0/255, 0.1])
+    cinza = np.array([128/255, 128/255, 128/255, 0.1])
+
+    p = linha["fracaoArvores2022"]
+
+    valor = p*verde + (1-p)*cinza
+    valor = list(valor)
+
+    return valor
+
+dfArvores = pd.read_csv("./tree_cover.csv")
+dfArvores["fracaoArvores2022"] = dfArvores.apply(fracaoArvores, axis=1)
+st.write(dfArvores.columns)
+dfArvores2 = dfArvores[["lat", "lon", "fracaoArvores2022"]]
+dfArvores2["cor"] = dfArvores2.apply(corArvores, axis=1)
+
+
+
+
+
+
+
+with st.expander("Dataframe dados"):
+    st.dataframe(dfRelevante)
+with st.expander("Dataframe arvores"):
+    st.dataframe(dfArvores2)
 
 
 #st.write(dfRelevante["CorTemp"].tolist())
 
 
-escolha = st.radio("O que plotar?", options=["Observatórios", "Temperatura", "Umidade"])
+escolha = st.radio("O que plotar?", options=["Observatórios",
+                                             "Temperatura",
+                                             "Umidade",
+                                             "Nada"])
 
 aux = ""
 if escolha == "Observatórios":
@@ -189,8 +240,26 @@ elif escolha == "Temperatura":
 elif escolha == "Umidade":
     aux = "CorUmi"
 
+boolArvores = st.checkbox("Plotar densidade de árvores?")
+
+
+if aux != "":
+    dfPlot = dfRelevante[["lat", "lon", aux]]
+    dfPlot = dfPlot.rename(columns={aux:"cor"})
+else:
+    dfPlot = pd.DataFrame(columns=["lat", "lon", "cor"])
+
+
+if boolArvores:
+    dfPlot = pd.concat([dfPlot, dfArvores2[["lat", "lon", "cor"]]], ignore_index=True)
+
+
+
+with st.expander("df plot"):
+    st.dataframe(dfPlot)
 
 
 # plotando estacoes
-st.map(data=dfRelevante, latitude="lat", longitude="lon", color=aux)
+if len(dfPlot) != 0:
+    st.map(data=dfPlot, latitude="lat", longitude="lon", color="cor")
 #st.dataframe(dfEstacoes)
