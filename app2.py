@@ -161,9 +161,13 @@ def corUmid(linha):
 
     return valor
 
+def corDefault(linha):
+    return list(np.array([0.0, 0.0, 0.0, 0.5]))
 
 dfRelevante["CorTemp"] = dfRelevante.apply(corTemp, axis=1)
 dfRelevante["CorUmi"] = dfRelevante.apply(corUmid, axis=1)
+dfRelevante["CorDefault"] = dfRelevante.apply(corDefault, axis=1)
+
 
 
 
@@ -234,7 +238,7 @@ escolha = st.radio("O que plotar?", options=["Observatórios",
 
 aux = ""
 if escolha == "Observatórios":
-    aux = "#808080"
+    aux = "CorDefault"
 elif escolha == "Temperatura":
     aux = "CorTemp"
 elif escolha == "Umidade":
