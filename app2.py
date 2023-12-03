@@ -34,10 +34,8 @@ if "estados" not in st.session_state:
 
 
 estadosSelecionados = st.multiselect("Estados a serem considerados", st.session_state["estados"])
-#st.write(estadosSelecionados)
-dfEstadosSelecionados = pd.DataFrame({
-    "ufSelecionado": estadosSelecionados
-})
+
+
 
 #st.dataframe(dfEstadosSelecionados)
 
@@ -60,6 +58,9 @@ maxMinGlobal = st.checkbox("Maximo e minimo global")
 
 if todosEstados:
     estadosSelecionados = st.session_state["estados"]
+dfEstadosSelecionados = pd.DataFrame({
+    "ufSelecionado": estadosSelecionados
+})
 
 # condicoes de parada
 if not todosDados and len(estadosSelecionados) == 0:
@@ -212,8 +213,8 @@ def corArvores(linha):
 
 dfArvores = pd.read_csv("./tree_cover.csv")
 dfArvores["fracaoArvores2022"] = dfArvores.apply(fracaoArvores, axis=1)
-st.write(dfArvores.columns)
-dfArvores2 = dfArvores[["lat", "lon", "fracaoArvores2022"]]
+#st.write(dfArvores.columns)
+dfArvores2 = dfArvores[["lat", "lon", "fracaoArvores2022"]].copy()
 dfArvores2["cor"] = dfArvores2.apply(corArvores, axis=1)
 
 
