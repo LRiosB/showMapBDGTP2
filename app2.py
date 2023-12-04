@@ -242,10 +242,14 @@ if escolha == "Observatórios":
     aux = "CorDefault"
 elif escolha == "Temperatura":
     aux = "CorTemp"
+    st.write("Observatórios no mapa variam de azul escuro (frio) para vermelho (quente)")
 elif escolha == "Umidade":
+    st.write("Observatórios no mapa variam de azul claro (úmido) para vermelho (seco)")
     aux = "CorUmi"
 
 boolArvores = st.checkbox("Plotar densidade de árvores?")
+if boolArvores:
+    st.write("Pontos no mapa indicam alta cobertura arbórea (verde) para baixa cobertura arbórea (cinza)")
 
 
 if aux != "":
